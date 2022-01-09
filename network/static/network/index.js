@@ -1,12 +1,25 @@
 
 document.addEventListener('DOMContentLoaded', ()=>{
 
-
+    document.querySelector('#index').addEventListener('click', () => load_index());
+  
     // Submit post
     document.querySelector('#post-form').onsubmit = submit_post;
-    load_posts();
+
+    //load by default
+    load_index();
 
 })
+
+function load_index () {
+
+    // unhide index view
+    document.querySelector('#index-view').style.display = 'block';
+
+    // load all posts
+    load_posts()
+}
+
 
 function submit_post (e) {
     e.preventDefault();
@@ -31,6 +44,7 @@ function submit_post (e) {
     // Clear post input field on submit
     document.querySelector('#post-input').value=""
 }
+
 
 // View all posts
 function load_posts () {

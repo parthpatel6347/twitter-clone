@@ -8,6 +8,8 @@ from django.http import JsonResponse
 import json
 from django.views.decorators.csrf import csrf_exempt
 
+from django.db.models import Count
+
 
 from .models import User, Post, Like, Follower
 
@@ -97,3 +99,31 @@ def view_posts(request):
     posts = posts.order_by("-timestamp").all()
 
     return JsonResponse([post.serialize() for post in posts], safe=False)
+
+
+def profile(request, id):
+
+    req_user = User.objects.get(id=id)
+
+    followers = req_user.followers.all().count()
+    following = req_user.following.all().count()
+    posts = (
+        req_user.posts.all().order_by("-timestamp").annotate(likes=Count("liked_by"))
+    )
+
+    if req_user.followers.filter(id=request.user.id).exists():
+        is_followed = True
+    else:
+        is_followed = False
+
+    return render(
+        request,
+        "network/profile.html",
+        {
+            "req_user": req_user,
+            "followers": followers,
+            "following": following,
+            "posts": posts,
+            "is_followed": is_followed,
+        },
+    )

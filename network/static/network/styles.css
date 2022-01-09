@@ -1,3 +1,27 @@
 .post-main{
-    border:1px solid rgb(206, 206, 206)
+    border:1px solid rgb(206, 206, 206);
+    min-width:500px;
+    margin:5px;
+    padding: 10px;
+    max-width: 700px;
+}
+
+.profile-header{
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    width: 100%;
+    margin-bottom: 30px;
+}
+
+.bold-text{
+    font-size:18px;
+    font-weight: 700;
+    margin-right: 4px;
+    color: black;
+}
+
+.follows-container{
+    color: rgb(126, 126, 126);
+    margin: 10px;
 }

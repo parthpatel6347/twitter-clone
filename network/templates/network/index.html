@@ -3,16 +3,32 @@
 
 
 {% block body %}
-    <div>
-        <form id="post-form">
-            <div class="form-group">
-                <label for="post">New Post</label>
-                <textarea class="form-control" id="post-input" rows="3"></textarea>
-                <button type="submit" class="btn btn-primary">Post</button>
-            </div>
-        </form>
+    {{ request.user.id|json_script:"user_id" }}
+    <div id="index-view">
+        <div>
+            <form id="post-form">
+                <div class="form-group">
+                    <label for="post">New Post</label>
+                    <textarea class="form-control" id="post-input" rows="3"></textarea>
+                    <button type="submit" class="btn btn-primary">Post</button>
+                </div>
+            </form>
+        </div>
+        <div id="all-posts"></div>
     </div>
-    <div id="all-posts"></div>
+
+    <div id="profile-view">
+        <div class="profile-header">
+            <h4 id="username"></h4>
+            <div>
+                <span class="follows-container"><span id="follower-num" class="bold-text"></span>Followers</span>
+                <span class="follows-container"><span id="following-num" class="bold-text"></span>Following</span>
+            </div>
+            {% if user.is_authenticated %}
+                <button type="button" class="btn btn-primary mt-2" id="follow-btn">Follow</button>
+            {% endif %}
+        </div>
+    </div>
 {% endblock %}
 
 {% block script %}

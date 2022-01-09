@@ -3,7 +3,16 @@ from django.db import models
 
 
 class User(AbstractUser):
-    pass
+    def serialize(self):
+        return {
+            "followers": self.followers.all().count(),
+            "following": self.following.all().count(),
+            "username": self.username,
+            "posts": [
+                post.serialize() for post in self.posts.all().order_by("-timestamp")
+            ],
+            "id": self.id,
+        }
 
 
 class Post(models.Model):

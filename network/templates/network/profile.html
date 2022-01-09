@@ -1,0 +1,31 @@
+{% extends "network/layout.html" %}
+{% load static %}
+
+{% block body %}
+    <div id="profile-view">
+        <div class="profile-header">
+            <h4 id="username">{{req_user.username}}</h4>
+            <div>
+                <span class="follows-container"><span id="follower-num" class="bold-text">{{followers}}</span>Followers</span>
+                <span class="follows-container"><span id="following-num" class="bold-text">{{following}}</span>Following</span>
+            </div>
+            {% if user.is_authenticated %}
+                {% if req_user.id != request.user.id %}
+                    {% if is_followed %}
+                        <button type="button" class="btn btn-primary mt-2" id="follow-btn">Unfollow</button>
+                    {% else %}
+                        <button type="button" class="btn btn-primary mt-2" id="follow-btn">Follow</button>
+                    {% endif %}
+                {% endif %}
+            {% endif %}
+        </div>
+        {% for post in posts %}
+            <div class="post-main">
+                <h5>{{post.content}}</h5>
+                <p>By: {{post.user}}</p>
+                <p>{{post.timestamp}}</p>
+                <p>Likes: {{post.likes}}</p> 
+            </div>
+        {% endfor %}
+    </div>
+{% endblock %}
