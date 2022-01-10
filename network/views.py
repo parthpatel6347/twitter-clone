@@ -1,5 +1,6 @@
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.decorators import login_required
+from django.core import paginator
 from django.db import IntegrityError
 from django.http import HttpResponse, HttpResponseRedirect
 from django.shortcuts import render
@@ -7,6 +8,7 @@ from django.urls import reverse
 from django.http import JsonResponse
 import json
 from django.views.decorators.csrf import csrf_exempt
+from django.core.paginator import Paginator
 
 from django.db.models import Count
 
@@ -116,6 +118,10 @@ def profile(request, id):
     else:
         is_followed = False
 
+    paginator = Paginator(posts, 10)
+    page_number = request.GET.get("page")
+    page_obj = paginator.get_page(page_number)
+
     return render(
         request,
         "network/profile.html",
@@ -123,7 +129,7 @@ def profile(request, id):
             "req_user": req_user,
             "followers": followers,
             "following": following,
-            "posts": posts,
+            "page_obj": page_obj,
             "is_followed": is_followed,
         },
     )
@@ -144,7 +150,11 @@ def following(request):
         .annotate(likes=Count("liked_by"))
     )
 
-    return render(request, "network/following.html", {"posts": posts})
+    paginator = Paginator(posts, 10)
+    page_number = request.GET.get("page")
+    page_obj = paginator.get_page(page_number)
+
+    return render(request, "network/following.html", {"page_obj": page_obj})
 
 
 @login_required
