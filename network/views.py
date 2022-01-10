@@ -176,3 +176,19 @@ def toggle_follow(request):
         newfollow.save()
 
     return HttpResponseRedirect(reverse("profile", args=(user_profile,)))
+
+
+@csrf_exempt
+@login_required
+def edit(request, id):
+
+    data = json.loads(request.body)
+    print(data.get("content"))
+
+    post = Post.objects.get(id=id)
+
+    post.content = data.get("content")
+
+    post.save()
+
+    return JsonResponse({"content": post.content})

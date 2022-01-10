@@ -29,11 +29,15 @@
             {% endif %}
         </div>
         {% for post in page_obj %}
-            <div class="post-main">
-                <h5>{{post.content}}</h5>
+            <div class="post-main" id="post-{{post.id}}">
+                <h5 class="content">{{post.content}}</h5>
                 <p>By: {{post.user}}</p>
                 <p>{{post.timestamp}}</p>
                 <p>Likes: {{post.likes}}</p> 
+                {% if user.is_authenticated and request.user == post.user %}
+                    <button class="btn btn-primary btn-sm edit" onclick=edit_post({{post.id}}) >Edit</button> 
+                    <button class="btn btn-primary btn-sm submit" onclick=submit_edit({{post.id}}) style="display:none;">Save</button> 
+                {% endif %}
             </div>
         {% endfor %}
 
@@ -61,4 +65,8 @@
             </span>
         </div>
     </div>
+{% endblock %}
+
+{% block script %}
+    <script src="{% static 'network/posts.js' %}"></script>
 {% endblock %}
