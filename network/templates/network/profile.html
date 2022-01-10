@@ -12,10 +12,19 @@
             {% if user.is_authenticated %}
                 {% if req_user.id != request.user.id %}
                     {% if is_followed %}
-                        <button type="button" class="btn btn-primary mt-2" id="follow-btn">Unfollow</button>
+                        <form action="{% url "toggle_follow" %}" method="post">
+                            {% csrf_token %}
+                            <input type="hidden" name="unfollow" value={{req_user.id}}>
+                            <button type="submit" class="btn btn-primary mt-2">Unfollow</button>
+                        </form>
                     {% else %}
-                        <button type="button" class="btn btn-primary mt-2" id="follow-btn">Follow</button>
+                        <form action="{% url "toggle_follow" %}" method="post">
+                            {% csrf_token %}
+                            <input type="hidden" name="follow" value={{req_user.id}}>
+                            <button type="submit" class="btn btn-primary mt-2">Follow</button>
+                        </form>
                     {% endif %}
+                    
                 {% endif %}
             {% endif %}
         </div>

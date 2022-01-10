@@ -1,0 +1,14 @@
+{% extends "network/layout.html" %}
+{% load static %}
+
+
+{% block body %}
+    {% for post in posts %}
+            <div class="post-main">
+                <h5>{{post.content}}</h5>
+                <p>By: {{post.user}}</p>
+                <p>{{post.timestamp}}</p>
+                <p>Likes: {{post.likes}}</p> 
+            </div>
+        {% endfor %}
+{% endblock %}

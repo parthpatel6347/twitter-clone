@@ -111,7 +111,7 @@ def profile(request, id):
         req_user.posts.all().order_by("-timestamp").annotate(likes=Count("liked_by"))
     )
 
-    if req_user.followers.filter(id=request.user.id).exists():
+    if Follower.objects.filter(user=req_user, follower=request.user).exists():
         is_followed = True
     else:
         is_followed = False
@@ -127,3 +127,42 @@ def profile(request, id):
             "is_followed": is_followed,
         },
     )
+
+
+@login_required
+def following(request):
+
+    # Get users that are followed by logged in user
+    following = Follower.objects.values_list("user", flat=True).filter(
+        follower=request.user
+    )
+
+    # Get all posts by those users, ordered in reverese chronological order, and add a likes count
+    posts = (
+        Post.objects.filter(user_id__in=following)
+        .order_by("-timestamp")
+        .annotate(likes=Count("liked_by"))
+    )
+
+    return render(request, "network/following.html", {"posts": posts})
+
+
+@login_required
+def toggle_follow(request):
+
+    user = request.user
+
+    # Only POST requests permitted for following or unfollowing.
+    if request.method != "POST":
+        return JsonResponse({"error": "POST request required."}, status=400)
+
+    if request.POST.get("unfollow", ""):
+        user_profile = request.POST["unfollow"]
+        Follower.objects.filter(user=user_profile, follower=user).delete()
+
+    elif request.POST.get("follow", ""):
+        user_profile = request.POST["follow"]
+        newfollow = Follower(user_id=user_profile, follower=user)
+        newfollow.save()
+
+    return HttpResponseRedirect(reverse("profile", args=(user_profile,)))
