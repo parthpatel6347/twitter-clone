@@ -1,9 +1,40 @@
 .post-main{
     border:1px solid rgb(206, 206, 206);
     min-width:500px;
-    margin:5px;
-    padding: 10px;
+    margin:6px;
+    padding: 15px;
     max-width: 700px;
+}
+
+.post-main .content{
+    font-size: 17px;
+    font-weight: 500;
+}
+
+.post-main .post-info{
+    font-size: 14px;
+    margin:0;
+}
+
+.like-btn-container{
+    display: flex;
+    margin-top: 5px;
+}
+
+.like-btn{
+    margin-left: 3px;
+}
+
+.index-container, .profile-view, .following-view{
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    width: 100%;
+}
+
+.form-container{
+    min-width: 400px;
+    margin-top: 20px;
 }
 
 .profile-header{
@@ -12,6 +43,7 @@
     align-items: center;
     width: 100%;
     margin-bottom: 30px;
+    margin-top: 20px;
 }
 
 .bold-text{
