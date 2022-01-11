@@ -1,6 +1,7 @@
 
 document.addEventListener('DOMContentLoaded', ()=>{ 
 
+    // Diable post button if input field is empty
     let submit_input = document.querySelector('#post-input')
     let submit_post_btn = document.querySelector('#submit-post')
 
@@ -13,10 +14,13 @@ document.addEventListener('DOMContentLoaded', ()=>{
             submit_post_btn.disabled = true;
         }
     }
+
+
     // Submit post
     document.querySelector('#post-form').onsubmit = submit_post;
 })
 
+// submit post function
 function submit_post () {
 
     // Get post text

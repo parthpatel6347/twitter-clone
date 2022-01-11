@@ -18,7 +18,10 @@ from .models import User, Post, Like, Follower
 
 def index(request):
 
+    # Get all posts, ordered by reverse chronological, and annotate each post with no.of likes
     posts = Post.objects.all().order_by("-timestamp").annotate(likes=Count("liked_by"))
+
+    # Paginator
     paginator = Paginator(posts, 10)
     page_number = request.GET.get("page")
     page_obj = paginator.get_page(page_number)
@@ -93,37 +96,35 @@ def post(request):
 
     # Create and save post object
     new_post = Post(user=request.user, content=data.get("post"))
-
     new_post.save()
 
     return JsonResponse({"message": "Posted successfully."}, status=201)
 
 
-def view_posts(request):
-
-    posts = Post.objects.all()
-
-    # Return posts in reverse chronologial order
-    posts = posts.order_by("-timestamp").all()
-
-    return JsonResponse([post.serialize() for post in posts], safe=False)
-
-
 def profile(request, id):
 
-    req_user = User.objects.get(id=id)
+    # Get user object of user whose profile view has been requested
+    try:
+        req_user = User.objects.get(id=id)
+    except User.DoesNotExist:
+        return render(
+            request, "network/error.html", {"error": "User not found."}, status=404
+        )
 
+    # Get requested users followers and following count, and get all posts by that user
     followers = req_user.followers.all().count()
     following = req_user.following.all().count()
     posts = (
         req_user.posts.all().order_by("-timestamp").annotate(likes=Count("liked_by"))
     )
 
+    # Check if the currently logged in user follows the requested user
     if Follower.objects.filter(user=req_user, follower=request.user).exists():
         is_followed = True
     else:
         is_followed = False
 
+    # Paginator
     paginator = Paginator(posts, 10)
     page_number = request.GET.get("page")
     page_obj = paginator.get_page(page_number)
@@ -166,21 +167,32 @@ def following(request):
 @login_required
 def toggle_follow(request):
 
+    # Get logged in user
     user = request.user
 
     # Only POST requests permitted for following or unfollowing.
     if request.method != "POST":
         return JsonResponse({"error": "POST request required."}, status=400)
 
+    # if request is to unfollow
     if request.POST.get("unfollow", ""):
+        # get user id of user to be unfollowed
         user_profile = request.POST["unfollow"]
+
+        # Delete follower entry with requested user and logged in user
         Follower.objects.filter(user=user_profile, follower=user).delete()
 
+    # if request is to follow
     elif request.POST.get("follow", ""):
+
+        # get user id to user to be followed
         user_profile = request.POST["follow"]
+
+        # create and save new follower object with requested user and logged in user
         newfollow = Follower(user_id=user_profile, follower=user)
         newfollow.save()
 
+    # redirect to profile page of requested user
     return HttpResponseRedirect(reverse("profile", args=(user_profile,)))
 
 
@@ -188,19 +200,21 @@ def toggle_follow(request):
 @login_required
 def edit(request, id):
 
-    data = json.loads(request.body)
-    print(data.get("content"))
+    # Only PUT request permitted for editing posts
+    if request.method != "PUT":
+        return JsonResponse({"error": "PUT request required."}, status=400)
 
+    data = json.loads(request.body)
+
+    # get post to be edited
     post = Post.objects.get(id=id)
 
+    # set post content to new edited content
     post.content = data.get("content")
 
-    print(post.user)
-    print(request.user)
-
+    # save post only if the creator of the post is the logged in user
     if post.user == request.user:
         post.save()
-
         return JsonResponse({"content": post.content})
 
     else:
@@ -211,18 +225,32 @@ def edit(request, id):
 @login_required
 def like(request, id):
 
+    # Only PUT request permitted for liking/disliking posts
+    if request.method != "PUT":
+        return JsonResponse({"error": "PUT request required."}, status=400)
+
+    # get logged in user
     user = request.user
 
     data = json.loads(request.body)
 
+    # get post to be liked or disliked
     post = Post.objects.get(id=id)
 
+    # If post is to be liked
     if data.get("action") == "like":
+
+        # Create and save new Like object with requested post and logged in user
         new_like = Like(user=user, post_id=id)
         new_like.save()
         return JsonResponse(post.serialize())
 
-    if data.get("action") == "cancel_like":
+    # If like is to be cancelled
+    elif data.get("action") == "cancel_like":
 
+        # Get like object with requested post and logged in user and delete
         Like.objects.filter(user=user, post_id=id).delete()
         return JsonResponse(post.serialize())
+
+    else:
+        return JsonResponse({"error": "Invalid input"}, status=400)
