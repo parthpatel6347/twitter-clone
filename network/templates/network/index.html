@@ -4,6 +4,8 @@
 
 {% block body %}
     <div class="index-container">
+
+    {% comment %} New Post Form {% endcomment %}
         <div class="form-container">
             <form id="post-form">
                 <div class="form-group">
@@ -14,6 +16,7 @@
             </form>
         </div>
 
+        {% comment %} Posts {% endcomment %}
         {% for post in page_obj %}
             <div class="post-main" id="post-{{post.id}}">
                 <h5 class="content">{{post.content}}</h5>
@@ -34,7 +37,7 @@
                 </div>
 
         
- 
+                {% comment %} Show Edit buttons if logged in user is the creator of the post {% endcomment %}
                 {% if user.is_authenticated and request.user == post.user %}
                     <button class="btn btn-primary btn-sm edit mt-2" onclick=edit_post({{post.id}}) >Edit</button> 
                     <button class="btn btn-primary btn-sm submit mt-2" onclick=submit_edit({{post.id}}) style="display:none;">Save</button> 
@@ -42,6 +45,7 @@
             </div>
         {% endfor %}
 
+        {% comment %} Pagination {% endcomment %}
         <div class="pagination">
             <span class="step-links">
                 <nav>

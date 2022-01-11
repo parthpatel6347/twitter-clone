@@ -2,6 +2,7 @@
 {% load static %}
 
 {% block body %}
+    {% comment %} User profile info {% endcomment %}
     <div class="profile-view">
         <div class="profile-header">
             <h4 id="username">{{req_user.username}}</h4>
@@ -9,7 +10,11 @@
                 <span class="follows-container"><span id="follower-num" class="bold-text">{{followers}}</span>Followers</span>
                 <span class="follows-container"><span id="following-num" class="bold-text">{{following}}</span>Following</span>
             </div>
+
+            {% comment %} Follow/Unfollow buttons {% endcomment %}
             {% if user.is_authenticated %}
+
+                {% comment %} If user profile is not of logged in user {% endcomment %}
                 {% if req_user.id != request.user.id %}
                     {% if is_followed %}
                         <form action="{% url "toggle_follow" %}" method="post">
@@ -28,6 +33,8 @@
                 {% endif %}
             {% endif %}
         </div>
+
+        {% comment %} Posts {% endcomment %}
         {% for post in page_obj %}
             <div class="post-main" id="post-{{post.id}}">
                 <h5 class="content">{{post.content}}</h5>
@@ -54,6 +61,7 @@
             </div>
         {% endfor %}
 
+        {% comment %} Pagination {% endcomment %}
         <div class="pagination">
             <span class="step-links">
                 <nav>
