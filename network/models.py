@@ -20,6 +20,9 @@ class Post(models.Model):
     content = models.TextField()
     timestamp = models.DateTimeField(auto_now_add=True)
 
+    def liked_by_users(self):
+        return self.liked_by.values_list("user_id", flat=True)
+
     def serialize(self):
         return {
             "id": self.id,

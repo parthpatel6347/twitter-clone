@@ -33,7 +33,21 @@
                 <h5 class="content">{{post.content}}</h5>
                 <p>By: {{post.user}}</p>
                 <p>{{post.timestamp}}</p>
-                <p>Likes: {{post.likes}}</p> 
+
+                 <p>Likes: <span class="like-count">{{post.likes}}</span></p>
+
+                {% comment %} Check to whether logged in user has liked the post and display button accordingly. {% endcomment %}
+                <div class="like-btn-container">
+                {% if user.is_authenticated %}
+                    {% if request.user.id in post.liked_by_users  %}
+                        <button class="btn btn-outline-secondary btn-sm" onclick=cancel_like({{post.id}})>Cancel Like</button>
+                    {% else %}
+                        <button class="btn btn-outline-primary btn-sm" onclick=like_post({{post.id}})>Like</button>
+                    {% endif %}
+                {% endif %}
+                </div>
+        
+ 
                 {% if user.is_authenticated and request.user == post.user %}
                     <button class="btn btn-primary btn-sm edit" onclick=edit_post({{post.id}}) >Edit</button> 
                     <button class="btn btn-primary btn-sm submit" onclick=submit_edit({{post.id}}) style="display:none;">Save</button> 

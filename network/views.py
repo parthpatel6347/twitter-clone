@@ -189,6 +189,34 @@ def edit(request, id):
 
     post.content = data.get("content")
 
-    post.save()
+    print(post.user)
+    print(request.user)
 
-    return JsonResponse({"content": post.content})
+    if post.user == request.user:
+        post.save()
+
+        return JsonResponse({"content": post.content})
+
+    else:
+        return JsonResponse({"error": "Forbidden"}, status=403)
+
+
+@csrf_exempt
+@login_required
+def like(request, id):
+
+    user = request.user
+
+    data = json.loads(request.body)
+
+    post = Post.objects.get(id=id)
+
+    if data.get("action") == "like":
+        new_like = Like(user=user, post_id=id)
+        new_like.save()
+        return JsonResponse(post.serialize())
+
+    if data.get("action") == "cancel_like":
+
+        Like.objects.filter(user=user, post_id=id).delete()
+        return JsonResponse(post.serialize())
