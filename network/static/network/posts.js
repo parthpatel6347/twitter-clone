@@ -1,5 +1,3 @@
-document.addEventListener("DOMContentLoaded", () =>{
-})
 
 function edit_post (id) {
     postContainer = document.querySelector(`#post-${id}`)
@@ -43,8 +41,7 @@ function submit_edit (id) {
       })
       .then(response => response.json())
       .then(res => {
-        console.log(res.content)
-
+     
         content.innerHTML = res.content
         content.style.display="block"
         textarea.style.display="none"
