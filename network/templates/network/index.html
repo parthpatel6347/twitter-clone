@@ -6,6 +6,7 @@
     <div class="index-container">
 
     {% comment %} New Post Form {% endcomment %}
+    {% if user.is_authenticated %}
         <div class="form-container">
             <form id="post-form">
                 <div class="form-group">
@@ -15,6 +16,7 @@
                 </div>
             </form>
         </div>
+    {% endif %}  
 
         {% comment %} Posts {% endcomment %}
         {% for post in page_obj %}
@@ -24,8 +26,8 @@
                  
                 {% comment %} Check to whether logged in user has liked the post and display button accordingly. {% endcomment %}
                 <div class="like-btn-container">
-                <span class="like-count">{{post.likes}}</span>
                 {% if user.is_authenticated %}
+                 <span class="like-count">{{post.likes}}</span>
                     {% if request.user.id in post.liked_by_users  %}
                         <div class="like-btn" onclick=cancel_like({{post.id}})><svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 0 24 24" width="24px" fill="#ff6060"><path d="M0 0h24v24H0V0z" fill="none"/><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/></svg>
                         </div>
@@ -33,6 +35,8 @@
                         <div class="like-btn" onclick=like_post({{post.id}})><svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 0 24 24" width="24px" fill="#ff6060"><path d="M0 0h24v24H0V0z" fill="none"/><path d="M16.5 3c-1.74 0-3.41.81-4.5 2.09C10.91 3.81 9.24 3 7.5 3 4.42 3 2 5.42 2 8.5c0 3.78 3.4 6.86 8.55 11.54L12 21.35l1.45-1.32C18.6 15.36 22 12.28 22 8.5 22 5.42 19.58 3 16.5 3zm-4.4 15.55l-.1.1-.1-.1C7.14 14.24 4 11.39 4 8.5 4 6.5 5.5 5 7.5 5c1.54 0 3.04.99 3.57 2.36h1.87C13.46 5.99 14.96 5 16.5 5c2 0 3.5 1.5 3.5 3.5 0 2.89-3.14 5.74-7.9 10.05z"/></svg>
                         </div>
                     {% endif %}
+                {% else %}
+                    <span class="like-count">Likes: {{post.likes}}</span>
                 {% endif %}
                 </div>
 
@@ -46,29 +50,34 @@
         {% endfor %}
 
         {% comment %} Pagination {% endcomment %}
-        <div class="pagination">
-            <span class="step-links">
-                <nav>
-                    <ul class="pagination">
-                        {% if page_obj.has_previous %}
-                            <li class="page-item"><a class="page-link" href="?page={{ page_obj.previous_page_number }}">previous</a></li>    
-                        {% endif %}
-
-                        {% for num in page_obj.paginator.page_range %}
-                            {% if num == page_obj.number %}
-                                <li class="page-item active"><a class="page-link">{{num}}</a></li>
-                            {% else %}
-                                <li class="page-item"><a class="page-link" href="?page={{num}}">{{num}}</a></li>
+        {% if page_obj %}
+            <div class="pagination">
+                <span class="step-links">
+                    <nav>
+                        <ul class="pagination">
+                            {% if page_obj.has_previous %}
+                                <li class="page-item"><a class="page-link" href="?page={{ page_obj.previous_page_number }}">previous</a></li>    
                             {% endif %}
-                        {% endfor %}
 
-                        {% if page_obj.has_next %}
-                            <li class="page-item"><a class="page-link" href="?page={{ page_obj.next_page_number }}">next</a></li>    
-                        {% endif %}
-                    </ul>
-                </nav>
-            </span>
-        </div>
+                            {% for num in page_obj.paginator.page_range %}
+                                {% if num == page_obj.number %}
+                                    <li class="page-item active"><a class="page-link">{{num}}</a></li>
+                                {% else %}
+                                    <li class="page-item"><a class="page-link" href="?page={{num}}">{{num}}</a></li>
+                                {% endif %}
+                            {% endfor %}
+
+                            {% if page_obj.has_next %}
+                                <li class="page-item"><a class="page-link" href="?page={{ page_obj.next_page_number }}">next</a></li>    
+                            {% endif %}
+                        </ul>
+                    </nav>
+                </span>
+            </div>
+        {% else %}
+            <h2>No Posts yet</h2>
+        {% endif %}
+        
     </div>    
 {% endblock %}
 

@@ -21,8 +21,8 @@ document.addEventListener('DOMContentLoaded', ()=>{
 })
 
 // submit post function
-function submit_post () {
-
+function submit_post (e) {
+    e.preventDefault();
     // Get post text
     let post = document.querySelector('#post-input').value;
 
@@ -36,6 +36,6 @@ function submit_post () {
     .then(response => response.json())
     .then(result => {
     // Print result
-    console.log(result);
+    location.reload();
     })
 }
